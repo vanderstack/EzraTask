@@ -15,6 +15,13 @@ public class TodosController : ControllerBase
         _todoService = todoService;
     }
 
+    [HttpGet]
+    public IActionResult GetTodos([FromQuery] PaginationQueryDto query, [FromQuery] bool isArchived = false)
+    {
+        var paginatedResponse = _todoService.GetAll(query.PageNumber, query.PageSize, isArchived);
+        return Ok(paginatedResponse);
+    }
+
     [HttpPost]
     public IActionResult CreateTodo(CreateTodoDto createDto)
     {

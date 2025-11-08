@@ -8,6 +8,7 @@ namespace EzraTask.Api.Services;
 
 public interface ITodoService
 {
+    PaginatedResponse<TodoDto> GetAll(int pageNumber, int pageSize, bool isArchived);
     Todo Create(CreateTodoDto dto);
     Todo? GetById(long todoId);
 }
@@ -21,6 +22,22 @@ public class TodoService : ITodoService
     public TodoService(IHtmlSanitizer htmlSanitizer)
     {
         _htmlSanitizer = htmlSanitizer;
+    }
+
+    public PaginatedResponse<TodoDto> GetAll(int pageNumber, int pageSize, bool isArchived)
+    {
+        var query = _todos.Values.AsQueryable()
+            .OrderByDescending(t => t.CreationTime);
+        
+        var totalCount = query.Count();
+        
+        var items = query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(t => Todo.ToDto(t))
+            .ToList();
+
+        return new PaginatedResponse<TodoDto>(items, totalCount, pageNumber, pageSize);
     }
 
     public Todo? GetById(long todoId)
