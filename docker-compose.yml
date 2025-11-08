@@ -31,11 +31,6 @@ services:
     depends_on:
       api:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5173"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
 
   e2e:
     build:
@@ -50,7 +45,5 @@ services:
       - /app/src/ui/node_modules
     depends_on:
       api:
-        condition: service_healthy
-      ui:
         condition: service_healthy
     command: npm run _test:e2e:local
