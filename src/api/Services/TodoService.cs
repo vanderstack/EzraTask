@@ -11,6 +11,7 @@ public interface ITodoService
     PaginatedResponse<TodoDto> GetAll(int pageNumber, int pageSize, bool isArchived);
     Todo Create(CreateTodoDto dto);
     Todo? GetById(long todoId);
+    Todo? ToggleCompletion(long todoId);
 }
 
 public class TodoService : ITodoService
@@ -51,8 +52,20 @@ public class TodoService : ITodoService
         var newId = Interlocked.Increment(ref _globalTodoId);
         var now = DateTime.UtcNow;
 
-        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now, dto.Priority, dto.DueDate); 
+        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now, dto.Priority, dto.DueDate, null); 
         _todos.TryAdd(newId, todo);
         return todo;
+    }
+
+    public Todo? ToggleCompletion(long todoId)
+    {
+        if (!_todos.TryGetValue(todoId, out var todo))
+        {
+            return null;
+        }
+
+        var updatedTodo = todo with { CompletedAt = todo.CompletedAt.HasValue ? null : DateTime.UtcNow };
+        _todos[todoId] = updatedTodo;
+        return updatedTodo;
     }
 }

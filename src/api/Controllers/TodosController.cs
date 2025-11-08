@@ -46,4 +46,15 @@ public class TodosController : ControllerBase
         }
         return Ok(Todo.ToDto(todo));
     }
+
+    [HttpPatch("{id:long}/toggle-completion")]
+    public IActionResult ToggleCompletion(long id)
+    {
+        var updatedTodo = _todoService.ToggleCompletion(id);
+        if (updatedTodo == null)
+        {
+            return NotFound();
+        }
+        return Ok(Todo.ToDto(updatedTodo));
+    }
 }

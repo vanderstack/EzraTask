@@ -5,8 +5,9 @@ public record Todo(
     string Description,
     DateTime CreationTime,
     Priority Priority,
-    DateTime? DueDate
+    DateTime? DueDate,
+    DateTime? CompletedAt
 )
 {
-    public static TodoDto ToDto(Todo todo) => new TodoDto(todo.Id.ToString(), todo.Description, todo.Priority, todo.DueDate);
+    public static TodoDto ToDto(Todo todo) => new TodoDto(todo.Id.ToString(), todo.Description, todo.Priority, todo.DueDate, todo.CompletedAt.HasValue, todo.CompletedAt);
 }
