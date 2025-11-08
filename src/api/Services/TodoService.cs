@@ -15,7 +15,7 @@ public interface ITodoService
     bool Archive(long todoId);
 }
 
-public class TodoService : ITodoService
+public class TodoService : ITodoService, IResettableService
 {
     private readonly ConcurrentDictionary<long, Todo> _todos = new();
     private long _globalTodoId = 0;
@@ -26,9 +26,16 @@ public class TodoService : ITodoService
         _htmlSanitizer = htmlSanitizer;
     }
 
+    public void ResetStateForTests()
+    {
+        _todos.Clear();
+        _globalTodoId = 0;
+    }
+
     public PaginatedResponse<TodoDto> GetAll(int pageNumber, int pageSize, bool isArchived)
     {
         var query = _todos.Values.AsQueryable()
+            .Where(t => !t.ArchivedAt.HasValue)
             .OrderByDescending(t => t.CreationTime);
         
         var totalCount = query.Count();

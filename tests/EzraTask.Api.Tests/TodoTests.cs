@@ -7,14 +7,22 @@ using Xunit;
 
 namespace EzraTask.Api.Tests;
 
-public class TodoTests : IClassFixture<WebApplicationFactory<Program>>
+public class TodoTests : IClassFixture<CustomWebApplicationFactory<Program>>, IAsyncLifetime
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly CustomWebApplicationFactory<Program> _factory;
 
-    public TodoTests(WebApplicationFactory<Program> factory)
+    public TodoTests(CustomWebApplicationFactory<Program> factory)
     {
         _factory = factory;
     }
+
+    public Task InitializeAsync()
+    {
+        _factory.ResetDatabase();
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task GetTodos_DoesNotReturnArchivedTodos()

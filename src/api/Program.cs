@@ -11,6 +11,11 @@ builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ITodoService, TodoService>();
 
+#if DEBUG
+// In DEBUG builds, register resettable services for test discovery
+builder.Services.AddSingleton<IResettableService>(sp => (sp.GetRequiredService<ITodoService>() as IResettableService)!);
+#endif
+
 builder.Services.AddSingleton<IHtmlSanitizer>(provider =>
 {
     var sanitizer = new HtmlSanitizer();

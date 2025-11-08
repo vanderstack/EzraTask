@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace EzraTask.Api.Tests;
 
-public class HealthCheckTests : IClassFixture<WebApplicationFactory<Program>>
+public class HealthCheckTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
 
-    public HealthCheckTests(WebApplicationFactory<Program> factory)
+    public HealthCheckTests(CustomWebApplicationFactory<Program> factory)
     {
         _factory = factory;
     }
