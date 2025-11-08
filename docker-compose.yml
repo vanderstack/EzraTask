@@ -1,0 +1,62 @@
+services:
+  api:
+    container_name: tdt_api
+    build:
+      context: .
+      dockerfile: ./src/api/Dockerfile.dev
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - .:/app
+    command: dotnet run --project /app/src/api/EzraTask.Api.csproj
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ui:
+    container_name: tdt_ui
+    build:
+      context: .
+      dockerfile: ./src/ui/Dockerfile.dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_PROXY_TARGET=http://api:8080
+    volumes:
+      - .:/app
+      - ui_node_modules:/app/src/ui/node_modules
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  e2e:
+    build:
+      context: .
+      dockerfile: ./src/ui/Dockerfile.e2e.dev
+    working_dir: /app/src/ui
+    env_file: .env
+    environment:
+      - VITE_API_PROXY_TARGET=http://api:8080
+    volumes:
+      - .:/app
+      - /app/src/ui/node_modules
+    depends_on:
+      api:
+        condition: service_healthy
+      ui:
+        condition: service_healthy
+    command: npm run _test:e2e:local
+
+volumes:
+  ui_node_modules:
