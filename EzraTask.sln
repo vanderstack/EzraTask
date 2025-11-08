@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E41A4CA0-EB16-4C58-903F-09A774DA4B97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzraTask.Api", "src\api\EzraTask.Api.csproj", "{4416120C-1C47-4D0C-A897-46CEB3632E06}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7BAEA5F9-B00D-4A32-A9C0-005378FB9D9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzraTask.Api.Tests", "tests\EzraTask.Api.Tests\EzraTask.Api.Tests.csproj", "{260A3EA8-AF45-46D0-9115-C06096F97E99}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4416120C-1C47-4D0C-A897-46CEB3632E06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4416120C-1C47-4D0C-A897-46CEB3632E06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4416120C-1C47-4D0C-A897-46CEB3632E06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4416120C-1C47-4D0C-A897-46CEB3632E06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{260A3EA8-AF45-46D0-9115-C06096F97E99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{260A3EA8-AF45-46D0-9115-C06096F97E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{260A3EA8-AF45-46D0-9115-C06096F97E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{260A3EA8-AF45-46D0-9115-C06096F97E99}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4416120C-1C47-4D0C-A897-46CEB3632E06} = {E41A4CA0-EB16-4C58-903F-09A774DA4B97}
+		{260A3EA8-AF45-46D0-9115-C06096F97E99} = {7BAEA5F9-B00D-4A32-A9C0-005378FB9D9F}
+	EndGlobalSection
+EndGlobal
