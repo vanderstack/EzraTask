@@ -3,8 +3,10 @@ namespace EzraTask.Api.Models;
 public record Todo(
     long Id,
     string Description,
-    DateTime CreationTime
+    DateTime CreationTime,
+    Priority Priority,
+    DateTime? DueDate
 )
 {
-    public static TodoDto ToDto(Todo todo) => new TodoDto(todo.Id.ToString(), todo.Description);
+    public static TodoDto ToDto(Todo todo) => new TodoDto(todo.Id.ToString(), todo.Description, todo.Priority, todo.DueDate);
 }

@@ -34,7 +34,7 @@ public class TodoService : ITodoService
         var newId = Interlocked.Increment(ref _globalTodoId);
         var now = DateTime.UtcNow;
 
-        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now); 
+        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now, dto.Priority, dto.DueDate); 
         _todos.TryAdd(newId, todo);
         return todo;
     }
