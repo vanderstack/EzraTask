@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" Version="8.0.865" />
+  </ItemGroup>
+
+  <ItemGroup>
   </ItemGroup>
 
   <!-- Make internal members visible to the test project ONLY in Debug configuration -->
