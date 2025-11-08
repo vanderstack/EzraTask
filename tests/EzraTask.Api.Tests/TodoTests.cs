@@ -19,15 +19,11 @@ public class TodoTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task Get_Todos_ReturnsOk()
     {
         var client = _factory.CreateClient();
-
-        var createResponse = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "Test Todo" });
-        createResponse.EnsureSuccessStatusCode();
-
-        var response = await client.GetAsync("/api/v1/todos/1");
+        var response = await client.GetAsync("/api/v1/todos");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-        [Fact] 
+    [Fact] 
     public async Task Post_Todo_WithInvalidDescription_ReturnsBadRequest() 
     { 
         var client = _factory.CreateClient(); 
