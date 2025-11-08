@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using EzraTask.Api.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -13,6 +14,21 @@ public class TodoTests : IClassFixture<WebApplicationFactory<Program>>
     public TodoTests(WebApplicationFactory<Program> factory)
     {
         _factory = factory;
+    }
+
+    [Fact]
+    public async Task Patch_ToggleCompletion_ReturnsOk()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "Todo to complete" });
+        var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoDto>();
+        
+        // Act
+        var response = await client.PatchAsync($"/api/v1/todos/{createdTodo.Id}/toggle-completion", null);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
