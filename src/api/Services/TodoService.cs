@@ -26,24 +26,18 @@ public class TodoService : ITodoService, IResettableService
         _htmlSanitizer = htmlSanitizer;
     }
 
-    public void ResetStateForTests()
-    {
-        _todos.Clear();
-        _globalTodoId = 0;
-    }
-
     public PaginatedResponse<TodoDto> GetAll(int pageNumber, int pageSize, bool isArchived)
     {
         var query = _todos.Values.AsQueryable()
-            .Where(t => !t.ArchivedAt.HasValue)
+            .Where(t => isArchived ? t.ArchivedAt.HasValue : !t.ArchivedAt.HasValue)
             .OrderByDescending(t => t.CreationTime);
-        
+
         var totalCount = query.Count();
-        
+
         var items = query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(t => Todo.ToDto(t))
+            .Select(t => t.ToDto())
             .ToList();
 
         return new PaginatedResponse<TodoDto>(items, totalCount, pageNumber, pageSize);
@@ -54,38 +48,54 @@ public class TodoService : ITodoService, IResettableService
         _todos.TryGetValue(todoId, out var todo);
         return todo;
     }
-    
+
     public Todo Create(CreateTodoDto dto)
     {
         var newId = Interlocked.Increment(ref _globalTodoId);
         var now = DateTime.UtcNow;
 
-        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now, dto.Priority, dto.DueDate, null, null); 
+        var todo = new Todo
+        {
+            Id = newId,
+            UserId = 0, // No longer used, set to default
+            Description = _htmlSanitizer.Sanitize(dto.Description.Trim()),
+            Priority = dto.Priority,
+            DueDate = dto.DueDate,
+            CreationTime = now,
+            LastModifiedTime = now,
+            RowVersion = 1
+        };
         _todos.TryAdd(newId, todo);
         return todo;
     }
 
     public Todo? ToggleCompletion(long todoId)
     {
-        if (!_todos.TryGetValue(todoId, out var todo))
-        {
-            return null;
-        }
+        var todo = GetById(todoId);
+        if (todo == null) return null;
 
-        var updatedTodo = todo with { CompletedAt = todo.CompletedAt.HasValue ? null : DateTime.UtcNow };
-        _todos[todoId] = updatedTodo;
-        return updatedTodo;
+        todo.CompletedAt = todo.CompletedAt.HasValue ? null : DateTime.UtcNow;
+        todo.LastModifiedTime = DateTime.UtcNow;
+        Interlocked.Increment(ref todo.RowVersion);
+
+        return todo;
     }
 
     public bool Archive(long todoId)
     {
-        if (!_todos.TryGetValue(todoId, out var todo))
-        {
-            return false;
-        }
+        var todo = GetById(todoId);
+        if (todo == null) return false;
 
-        var updatedTodo = todo with { ArchivedAt = DateTime.UtcNow };
-        _todos[todoId] = updatedTodo;
+        todo.ArchivedAt = DateTime.UtcNow;
+        todo.LastModifiedTime = DateTime.UtcNow;
+        Interlocked.Increment(ref todo.RowVersion);
+
         return true;
+    }
+
+    public void ResetStateForTests()
+    {
+        _todos.Clear();
+        _globalTodoId = 0;
     }
 }

@@ -31,11 +31,11 @@ public class TodosController : ControllerBase
         }
 
         var newTodo = _todoService.Create(createDto);
-        var todoDto = Todo.ToDto(newTodo);
+        var todoDto = newTodo.ToDto();
 
         return CreatedAtAction(nameof(GetTodoById), new { id = newTodo.Id }, todoDto);
     }
-    
+
     [HttpGet("{id:long}")]
     public IActionResult GetTodoById(long id)
     {
@@ -44,7 +44,7 @@ public class TodosController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(Todo.ToDto(todo));
+        return Ok(todo.ToDto());
     }
 
     [HttpPatch("{id:long}/toggle-completion")]
@@ -55,7 +55,7 @@ public class TodosController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(Todo.ToDto(updatedTodo));
+        return Ok(updatedTodo.ToDto());
     }
 
     [HttpPatch("{id:long}/archive")]
