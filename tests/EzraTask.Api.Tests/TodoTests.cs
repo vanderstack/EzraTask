@@ -17,6 +17,28 @@ public class TodoTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task GetTodos_DoesNotReturnArchivedTodos()
+    {
+        var client = _factory.CreateClient();
+        // Arrange: Create two todos.
+        await client.PostAsJsonAsync("/api/v1/todos", new { Description = "Active Todo" });
+        var createResponse = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "Archived Todo" });
+        var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoDto>();
+        
+        // Archive one of them.
+        await client.PatchAsync($"/api/v1/todos/{createdTodo.Id}/archive", null);
+
+        // Act: Get the list of todos.
+        var response = await client.GetAsync("/api/v1/todos");
+        var paginatedResponse = await response.Content.ReadFromJsonAsync<PaginatedResponse<TodoDto>>();
+
+        // Assert: Check that only the active todo is returned.
+        Assert.Equal(1, paginatedResponse.TotalCount);
+        Assert.Single(paginatedResponse.Items);
+        Assert.Equal("Active Todo", paginatedResponse.Items[0].Description);
+    }
+
+    [Fact]
     public async Task Patch_Archive_ReturnsNoContent()
     {
         var client = _factory.CreateClient();
