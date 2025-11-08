@@ -26,4 +26,20 @@ public class TodoTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.GetAsync("/api/v1/todos/1");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
+        [Fact] 
+    public async Task Post_Todo_WithInvalidDescription_ReturnsBadRequest() 
+    { 
+        var client = _factory.CreateClient(); 
+        var response = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "A" }); // Invalid: too short 
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode); 
+    } 
+ 
+    [Fact] 
+    public async Task Post_Todo_ReturnsCreated() 
+    { 
+        var client = _factory.CreateClient(); 
+        var response = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "A new todo" }); 
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode); 
+    } 
 }
