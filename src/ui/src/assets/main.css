@@ -1,0 +1,24 @@
+:root {
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-text-primary: #2c3e50;
+  --color-text-secondary: #6b7280;
+  --color-primary: #216997;
+  --color-primary-hover: #1a5276;
+  --color-border: #e5e7eb;
+  --color-border-input: #d1d5db;
+  --color-disabled-bg: #e5e7eb;
+  --color-disabled-text: #57606a;
+  --color-danger-bg: #fbeae9;
+  --color-danger-border: #f6c8c4;
+  --color-danger-text: #9a2020;
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --border-radius: 6px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --priority-low-bg: #e0f2fe; --priority-low-text: #0c4a6e; --priority-low-dot: #38bdf8;
+  --priority-medium-bg: #fef9c3; --priority-medium-text: #854d0e; --priority-medium-dot: #facc15;
+  --priority-high-bg: #fee2e2; --priority-high-text: #991b1b; --priority-high-dot: #ef4444;
+}
+body { margin: 0; font-family: var(--font-main); background-color: var(--color-background); color: var(--color-text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
