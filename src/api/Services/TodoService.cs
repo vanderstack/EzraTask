@@ -12,6 +12,7 @@ public interface ITodoService
     Todo Create(CreateTodoDto dto);
     Todo? GetById(long todoId);
     Todo? ToggleCompletion(long todoId);
+    bool Archive(long todoId);
 }
 
 public class TodoService : ITodoService
@@ -52,7 +53,7 @@ public class TodoService : ITodoService
         var newId = Interlocked.Increment(ref _globalTodoId);
         var now = DateTime.UtcNow;
 
-        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now, dto.Priority, dto.DueDate, null); 
+        var todo = new Todo(newId, _htmlSanitizer.Sanitize(dto.Description.Trim()), now, dto.Priority, dto.DueDate, null, null); 
         _todos.TryAdd(newId, todo);
         return todo;
     }
@@ -67,5 +68,17 @@ public class TodoService : ITodoService
         var updatedTodo = todo with { CompletedAt = todo.CompletedAt.HasValue ? null : DateTime.UtcNow };
         _todos[todoId] = updatedTodo;
         return updatedTodo;
+    }
+
+    public bool Archive(long todoId)
+    {
+        if (!_todos.TryGetValue(todoId, out var todo))
+        {
+            return false;
+        }
+
+        var updatedTodo = todo with { ArchivedAt = DateTime.UtcNow };
+        _todos[todoId] = updatedTodo;
+        return true;
     }
 }

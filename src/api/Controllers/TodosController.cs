@@ -57,4 +57,15 @@ public class TodosController : ControllerBase
         }
         return Ok(Todo.ToDto(updatedTodo));
     }
+
+    [HttpPatch("{id:long}/archive")]
+    public IActionResult ArchiveTodo(long id)
+    {
+        var success = _todoService.Archive(id);
+        if (!success)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
 }
