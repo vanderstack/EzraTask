@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import { configDefaults } from 'vitest/config'
 import viteConfigCallback from './vite.config'
 
+// Get the Vite config
 const viteConfig = viteConfigCallback({ mode: 'development', command: 'serve' });
 
 export default defineConfig({

@@ -40,7 +40,7 @@ public class TodoService : ITodoService, IResettableService
             .Select(t => t.ToDto())
             .ToList();
 
-        return new PaginatedResponse<TodoDto>(items, totalCount, pageNumber, pageSize);
+        return new PaginatedResponse<TodoDto> { Items = items, TotalCount = totalCount, PageNumber = pageNumber, PageSize = pageSize };
     }
 
     public Todo? GetById(long todoId)

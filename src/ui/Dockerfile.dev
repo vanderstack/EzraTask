@@ -1,3 +1,4 @@
+# src/ui/Dockerfile.dev (NEW)
 FROM node:20-alpine
 WORKDIR /app/src/ui
 RUN apk add --no-cache curl

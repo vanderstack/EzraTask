@@ -8,13 +8,16 @@ export function useTodos() {
   const error = ref<string | null>(null);
 
   const fetchTodos = async (isArchived: boolean = false) => {
+    console.log('[OBSERVABILITY] Fetching todos...');
     isLoading.value = true;
     error.value = null;
     try {
       const response = await apiClient.get('/api/v1/todos', { params: { isArchived } });
       todos.value = response.data.items;
+      console.log(`[OBSERVABILITY] Fetched ${todos.value.length} todos.`);
     } catch (e: any) {
       error.value = e.message || 'An unknown error occurred.';
+      console.error('[OBSERVABILITY] Error fetching todos:', e);
     } finally {
       isLoading.value = false;
     }
@@ -23,8 +26,10 @@ export function useTodos() {
   const addTodo = async (newTodoData: Omit<Todo, 'id' | 'isCompleted'>) => {
     error.value = null;
     try {
+      console.log(`[OBSERVABILITY] Before addTodo, current todos: ${JSON.stringify(todos.value)}`);
       await apiClient.post('/api/v1/todos', newTodoData);
       await fetchTodos(); // Re-fetch the list to ensure consistency
+      console.log(`[OBSERVABILITY] After addTodo, updated todos: ${JSON.stringify(todos.value)}`);
     } catch (e: any) {
       error.value = e.message || 'Failed to add todo.';
     }

@@ -64,15 +64,15 @@ public class TodoTests : IClassFixture<CustomWebApplicationFactory<Program>>, IA
     [Fact]
     public async Task Patch_ToggleCompletion_ReturnsOk()
     {
-        // Arrange
         var client = _factory.CreateClient();
+        // Arrange: First, create a todo to toggle.
         var createResponse = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "Todo to complete" });
         var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoDto>();
-        
-        // Act
+
+        // Act: Toggle the completion status.
         var response = await client.PatchAsync($"/api/v1/todos/{createdTodo.Id}/toggle-completion", null);
 
-        // Assert
+        // Assert: Check for a successful response.
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -84,19 +84,19 @@ public class TodoTests : IClassFixture<CustomWebApplicationFactory<Program>>, IA
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    [Fact] 
-    public async Task Post_Todo_WithInvalidDescription_ReturnsBadRequest() 
-    { 
-        var client = _factory.CreateClient(); 
-        var response = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "A" }); // Invalid: too short 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode); 
-    } 
- 
-    [Fact] 
-    public async Task Post_Todo_ReturnsCreated() 
-    { 
-        var client = _factory.CreateClient(); 
-        var response = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "A new todo" }); 
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode); 
-    } 
+    [Fact]
+    public async Task Post_Todo_WithInvalidDescription_ReturnsBadRequest()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "A" }); // Invalid: too short
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Post_Todo_ReturnsCreated()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync("/api/v1/todos", new { Description = "A new todo" });
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
 }
