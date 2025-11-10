@@ -1,5 +1,5 @@
 # Use a Debian-based Node.js image for binary compatibility with Cypress
-FROM node:20-bookworm
+FROM public.ecr.aws/docker/library/node:20-bookworm
 
 # Install the full suite of Cypress dependencies for Debian/Ubuntu
 # See: https://on.cypress.io/required-dependencies

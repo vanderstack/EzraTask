@@ -1,5 +1,5 @@
 # Stage 1: Build the Vue.js frontend
-FROM node:20-alpine AS build-ui
+FROM public.ecr.aws/docker/library/node:20-alpine AS build-ui
 WORKDIR /app
 COPY src/ui/package*.json ./
 RUN npm ci
@@ -12,7 +12,7 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
 # Stage 2: Serve the built assets using Vite's preview server
-FROM node:20-alpine
+FROM public.ecr.aws/docker/library/node:20-alpine
 WORKDIR /app
 
 # Copy the built files and necessary config to run the preview server

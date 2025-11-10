@@ -1,5 +1,5 @@
 # Stage 1: Build the Vue.js frontend
-FROM node:20-alpine AS build-ui
+FROM public.ecr.aws/docker/library/node:20-alpine AS build-ui
 WORKDIR /app
 COPY src/ui/package*.json ./
 RUN npm ci
@@ -11,7 +11,7 @@ ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 RUN echo "VITE_API_BASE_URL is set to: $VITE_API_BASE_URL" && npm run build
 
 # Stage 2: Create a self-contained UI server for E2E tests using Vite Preview
-FROM node:20-alpine AS ui-e2e
+FROM public.ecr.aws/docker/library/node:20-alpine AS ui-e2e
 RUN apk add curl
 WORKDIR /app
 # Copy only what's needed to run the preview server
@@ -32,7 +32,8 @@ COPY ["EzraTask.sln", "./"]
 COPY ["src/api/EzraTask.Api.csproj", "src/api/"]
 COPY ["tests/EzraTask.Api.Tests/EzraTask.Api.Tests.csproj", "tests/EzraTask.Api.Tests/"]
 RUN dotnet restore "EzraTask.sln"
-COPY . .
+COPY src ./src
+COPY tests ./tests
 WORKDIR "/src"
 RUN dotnet publish "src/api/EzraTask.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 WORKDIR "/src/api"
