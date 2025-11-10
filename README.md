@@ -59,8 +59,10 @@ docker-compose run --rm ui npm run _test:unit:local
 
 ### End-to-End Tests (Cypress)
 
+This command uses a dedicated, self-contained environment to run the full E2E test suite against production-like builds of the frontend and backend. This is the definitive way to validate the application.
+
 ```bash
-docker-compose run --rm e2e
+docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit
 ```
 
 ## Architecture

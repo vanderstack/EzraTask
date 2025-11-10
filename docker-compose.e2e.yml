@@ -1,0 +1,53 @@
+# docker-compose.e2e.yml (NEW & Simplified)
+services:
+  # The API service, built for testing
+  api:
+    container_name: tdt_api_e2e
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-e2e # <-- Build the specific E2E target for the API
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # The UI service, using Vite's preview server
+  ui:
+    container_name: tdt_ui_e2e
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ui-e2e
+      args:
+        VITE_API_BASE_URL: ""
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # The Cypress test runner service
+  cypress:
+    container_name: tdt_cypress_e2e
+    build:
+      context: .
+      dockerfile: src/ui/cypress/Dockerfile
+    environment:
+      # Pass the URLs of the services under test to Cypress
+      - CYPRESS_BASE_URL=http://ui:5173
+      - CYPRESS_API_URL=http://api:8080
+    depends_on:
+      ui:
+        condition: service_healthy
+    # NO BIND MOUNTS FOR SOURCE CODE!
+    volumes:
+      # Mount video/screenshot outputs for easy access on the host
+      - ./src/ui/cypress/videos:/app/src/ui/cypress/videos
+      - ./src/ui/cypress/screenshots:/app/src/ui/cypress/screenshots

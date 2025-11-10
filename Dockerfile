@@ -1,40 +1,63 @@
 # Stage 1: Build the Vue.js frontend
-FROM node:20-alpine@sha256:02c342a17c5b4b1a1170b22896f5b080517f308a385157a4e58b16f1250100f7 AS build-ui
+FROM node:20-alpine AS build-ui
 WORKDIR /app
 COPY src/ui/package*.json ./
 RUN npm ci
 COPY src/ui/ ./
-RUN npm run build
+# Add an argument to receive the API URL at build time
+ARG VITE_API_BASE_URL
+# Set it as an environment variable so the build process can see it
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+RUN echo "VITE_API_BASE_URL is set to: $VITE_API_BASE_URL" && npm run build
 
-# Stage 2: Build and publish the backend
-FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:511e0b1b52c3c13e51510a78964036e492fb860533317e076a6b8b0e79143642 AS build-api
+# Stage 2: Create a self-contained UI server for E2E tests using Vite Preview
+FROM node:20-alpine AS ui-e2e
+RUN apk add curl
+WORKDIR /app
+# Copy only what's needed to run the preview server
+COPY src/ui/package*.json ./
+COPY src/ui/vite.config.ts ./
+# Install production dependencies + vite itself
+RUN npm ci --omit=dev && npm install vite
+# Copy the built static assets from the build stage
+COPY --from=build-ui /app/dist ./dist
+EXPOSE 5173
+# The command to run the production preview server
+CMD ["npx", "vite", "preview", "--host", "--port", "5173"]
+
+# Stage 3: Build and publish the backend (for production)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-api
 WORKDIR /src
-
-# Copy project files and restore dependencies to leverage layer caching
 COPY ["EzraTask.sln", "./"]
 COPY ["src/api/EzraTask.Api.csproj", "src/api/"]
+COPY ["tests/EzraTask.Api.Tests/EzraTask.Api.Tests.csproj", "tests/EzraTask.Api.Tests/"]
 RUN dotnet restore "EzraTask.sln"
-
-# Copy the rest of the source code
 COPY . .
+WORKDIR "/src"
+RUN dotnet publish "src/api/EzraTask.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 WORKDIR "/src/api"
-RUN dotnet publish "EzraTask.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Stage 3: Create the final production image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:7314725345751b75240d998185a8a1836173b1e33c46a6f68e986a7071c7b8d4 AS final
+# Stage 4: Build and publish the backend (for E2E tests)
+FROM build-api AS build-api-e2e
+WORKDIR "/src"
+# This stage builds in Debug mode to include the /debug/reset-state endpoint
+RUN dotnet publish "src/api/EzraTask.Api.csproj" -c Debug -o /app/publish-e2e /p:UseAppHost=false
+WORKDIR "/src/api"
+
+# Stage 5: Create the final production image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8080
-
-# Create a non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Copy backend build output from the 'publish' stage and set ownership
 COPY --from=build-api --chown=appuser:appgroup /app/publish .
-
-# Copy frontend build output from the 'build-ui' stage to the wwwroot folder and set ownership
 COPY --from=build-ui --chown=appuser:appgroup /app/dist ./wwwroot
-
-# Switch to the non-root user
 USER appuser
+ENTRYPOINT ["dotnet", "EzraTask.Api.dll"]
 
+# Stage 6: Create the final E2E test image for the API
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS api-e2e
+RUN apt-get update && apt-get install -y curl
+WORKDIR /app
+EXPOSE 8080
+COPY --from=build-api-e2e /app/publish-e2e .
 ENTRYPOINT ["dotnet", "EzraTask.Api.dll"]

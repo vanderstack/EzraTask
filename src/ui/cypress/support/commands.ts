@@ -17,3 +17,9 @@ Cypress.Commands.add('login', (username, password) => {
     cy.get('[data-testid="welcome-message"]').should('be.visible')
   })
 })
+
+Cypress.Commands.add('resetState', () => {
+  // Use the API URL provided by the environment variable in docker-compose
+  const apiUrl = Cypress.env('API_URL');
+  cy.request('POST', `${apiUrl}/debug/reset-state`);
+});

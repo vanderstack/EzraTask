@@ -1,0 +1,22 @@
+# Use the production build process from the root Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-api
+WORKDIR /src
+
+# Copy project files and restore dependencies
+COPY ["EzraTask.sln", "./"]
+COPY ["src/api/EzraTask.Api.csproj", "src/api/"]
+COPY ["tests/EzraTask.Api.Tests/EzraTask.Api.Tests.csproj", "tests/EzraTask.Api.Tests/"]
+RUN dotnet restore "EzraTask.sln"
+
+# Copy the rest of the source code and publish
+COPY . .
+WORKDIR "/src/src/api"
+# Build in Debug to ensure our test-only reset endpoint is included
+RUN dotnet publish "EzraTask.Api.csproj" -c Debug -o /app/publish
+
+# Create the final image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+EXPOSE 8080
+COPY --from=build-api /app/publish .
+ENTRYPOINT ["dotnet", "EzraTask.Api.dll"]

@@ -26,10 +26,14 @@ export function useTodos() {
   const addTodo = async (newTodoData: Omit<Todo, 'id' | 'isCompleted'>) => {
     error.value = null;
     try {
-      console.log(`[OBSERVABILITY] Before addTodo, current todos: ${JSON.stringify(todos.value)}`);
-      await apiClient.post('/api/v1/todos', newTodoData);
-      await fetchTodos(); // Re-fetch the list to ensure consistency
-      console.log(`[OBSERVABILITY] After addTodo, updated todos: ${JSON.stringify(todos.value)}`);
+      // --- FIX START ---
+      // 1. Capture the response from the POST request, which contains the created Todo.
+      const response = await apiClient.post<Todo>('/api/v1/todos', newTodoData);
+      
+      // 2. Instead of re-fetching, add the new item from the response directly to the local state.
+      //    This is more efficient and eliminates the race condition.
+      todos.value.unshift(response.data);
+      // --- FIX END ---
     } catch (e: any) {
       error.value = e.message || 'Failed to add todo.';
     }

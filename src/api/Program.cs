@@ -26,6 +26,25 @@ builder.Services.AddSingleton<IHtmlSanitizer>(provider =>
 
 var app = builder.Build();
 
+app.Use((context, next) =>
+{
+    Console.WriteLine($"[OBSERVABILITY] Incoming request: {context.Request.Path}");
+    return next();
+});
+
+#if DEBUG
+// Add a special endpoint for E2E tests to reset the application state.
+// This code will NOT be included in Release builds.
+app.MapPost("/debug/reset-state", (IEnumerable<IResettableService> resettableServices) =>
+{
+    foreach (var service in resettableServices)
+    {
+        service.ResetStateForTests();
+    }
+    return Results.Ok("State has been reset.");
+});
+#endif
+
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { Status = "OK" }));
 

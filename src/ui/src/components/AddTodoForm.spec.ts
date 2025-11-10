@@ -14,9 +14,12 @@ describe('AddTodoForm.vue', () => {
     await fireEvent.submit(form);
 
     // Check if the event was emitted
-    expect(emitted().submit).toBeTruthy();
+    const submitEvent = emitted().submit;
+    expect(submitEvent).toBeTruthy();
 
     // Check the payload of the event
-    expect(emitted().submit[0]).toEqual([{ description: newTodoText }]);
+    if (submitEvent) {
+      expect(submitEvent[0]).toEqual([{ description: newTodoText }]);
+    }
   });
 });

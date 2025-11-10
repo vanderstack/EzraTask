@@ -2,12 +2,14 @@ const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: 'http://ui:5173',
+    // This now comes from the CYPRESS_BASE_URL env var in docker-compose.e2e.yml
+    // baseUrl: 'http://ui:5173', // old
     env: {
-      apiUrl: 'http://api:8080'
+      // This now comes from the CYPRESS_API_URL env var
+      // apiUrl: 'http://api:8080' // old
     },
-    setupNodeEvents(on, config) {
-      on('before:browser:launch', (browser = {}, launchOptions) => {
+    setupNodeEvents(on: any, config: any) {
+      on('before:browser:launch', (browser: { name?: string } = {}, launchOptions: any) => {
         if (browser.name === 'electron') {
           launchOptions.args.push('--enable-logging');
         }
@@ -16,7 +18,7 @@ module.exports = defineConfig({
       });
 
       on('task', {
-        log(message) {
+        log(message: any) {
           console.log(`[CYPRESS BROWSER LOG] ${message}`);
           return null;
         },

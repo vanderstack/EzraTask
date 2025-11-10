@@ -1,8 +1,7 @@
-namespace EzraTask.Api.Services;
-
-#if DEBUG
-public interface IResettableService
+namespace EzraTask.Api.Services
 {
-    void ResetStateForTests();
+    public interface IResettableService
+    {
+        void ResetStateForTests();
+    }
 }
-#endif

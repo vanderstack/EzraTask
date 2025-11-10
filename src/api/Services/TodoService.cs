@@ -15,7 +15,7 @@ public interface ITodoService
     bool Archive(long todoId);
 }
 
-public class TodoService : ITodoService, IResettableService
+public partial class TodoService : ITodoService
 {
     private readonly ConcurrentDictionary<long, Todo> _todos = new();
     private long _globalTodoId = 0;
@@ -92,10 +92,24 @@ public class TodoService : ITodoService, IResettableService
 
         return true;
     }
+}
+
+#if DEBUG
+
+public partial class TodoService : IResettableService
+
+{
 
     public void ResetStateForTests()
+
     {
+
         _todos.Clear();
+
         _globalTodoId = 0;
+
     }
+
 }
+
+#endif

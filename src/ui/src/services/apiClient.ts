@@ -1,13 +1,19 @@
 import axios from 'axios';
 
+// Vite will replace `import.meta.env.VITE_API_BASE_URL` with the string value
+// at build time. This makes the UI aware of the API's location.
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
 const client = axios.create({
+  baseURL: baseURL, // e.g., 'http://api:8080'
   withCredentials: true,
 });
 
 // Add a request interceptor for logging
 client.interceptors.request.use(
   (config) => {
-    console.log(`[API Client Request] ${config.method?.toUpperCase()} ${config.url}`, { config });
+    // The URL will now be relative to the baseURL, e.g., '/api/v1/todos'
+    console.log(`[API Client Request] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`, { config });
     return config;
   },
   (error) => {

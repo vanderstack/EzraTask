@@ -1,12 +1,33 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/vue';
 import TodoList from './TodoList.vue';
+import type { Todo } from '@/types';
 
 describe('TodoList.vue', () => {
   it('renders a list of todos', () => {
-    const todos = [
-      { id: 1, description: 'Todo 1', isComplete: false, isArchived: false },
-      { id: 2, description: 'Todo 2', isComplete: true, isArchived: false },
+    const todos: Todo[] = [
+      {
+        id: 1,
+        description: 'Test Todo 1',
+        isCompleted: false,
+        completedAt: null,
+        priority: 'Medium',
+        dueDate: null,
+        creationTime: new Date().toISOString(),
+        lastModifiedTime: new Date().toISOString(),
+        rowVersion: '1',
+      },
+      {
+        id: 2,
+        description: 'Test Todo 2',
+        isCompleted: true,
+        completedAt: new Date().toISOString(),
+        priority: 'High',
+        dueDate: null,
+        creationTime: new Date().toISOString(),
+        lastModifiedTime: new Date().toISOString(),
+        rowVersion: '1',
+      },
     ];
     const { getAllByTestId } = render(TodoList, {
       props: { todos },
