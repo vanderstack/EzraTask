@@ -29,5 +29,6 @@ bld/
 # Cypress
 cypress/videos/
 cypress/screenshots/
+src/ui/cypress/screenshots/
 
 src/ui/node_modules/

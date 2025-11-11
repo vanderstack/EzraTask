@@ -32,8 +32,8 @@ COPY ["EzraTask.sln", "./"]
 COPY ["src/api/EzraTask.Api.csproj", "src/api/"]
 COPY ["tests/EzraTask.Api.Tests/EzraTask.Api.Tests.csproj", "tests/EzraTask.Api.Tests/"]
 RUN dotnet restore "EzraTask.sln"
-COPY src ./src
-COPY tests ./tests
+COPY ["src/api/", "./src/api/"]
+COPY ["tests/EzraTask.Api.Tests/", "./tests/EzraTask.Api.Tests/"]
 WORKDIR "/src"
 RUN dotnet publish "src/api/EzraTask.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 WORKDIR "/src/api"

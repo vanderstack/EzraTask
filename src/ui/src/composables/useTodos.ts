@@ -3,6 +3,7 @@ import type { Todo } from '@/types';
 import apiClient from '@/services/apiClient';
 
 export function useTodos() {
+  console.log('[OBSERVABILITY] useTodos composable initialized');
   const todos = ref<Todo[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);

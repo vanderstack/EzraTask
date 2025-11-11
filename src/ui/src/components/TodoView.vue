@@ -5,6 +5,8 @@ import TodoList from './TodoList.vue';
 import { useTodos } from '@/composables/useTodos';
 import type { Todo } from '@/types';
 
+console.log('[OBSERVABILITY] TodoView component initializing...');
+
 // By not destructuring, we keep the reactive connection to the composable's state.
 const todoState = useTodos();
 
@@ -24,6 +26,7 @@ const handleAddTodo = (newTodoData: { description: string }) => {
 };
 
 onMounted(() => {
+  console.log('[OBSERVABILITY] TodoView component mounted.');
   // Call the method on the reactive object.
   todoState.fetchTodos();
 });
